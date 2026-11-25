@@ -43,3 +43,11 @@ tromonibar tv <extend|mirror|off>
 tromonibar hp <portrait-right|portrait-left|landscape|off>
 tromonibar apply
 ```
+
+## Persistência e Comportamento
+
+- **Estado salvo:** cada alteração grava automaticamente o perfil em `~/.config/tromonibar/state.conf`.
+- **Autostart no Xorg:** `tromonibar-apply.desktop` aguarda `3s` após o login (`X-GNOME-Autostart-Delay=3`) e executa `tromonibar apply` para restaurar o último estado.
+- **Fallback seguro:** se a TV (`HDMI-0`) ou o monitor HP (`DVI-D-0`) estiverem fisicamente desconectados/desligados da tomada, o `apply` ignora a saída ausente sem afetar os demais monitores.
+- **Barra superior fixa no monitor principal:** o `DPY-2` (`DP-0`) é posicionado primeiro na `CurrentMetaMode` e `XineramaInfoOrder=DP-0` é reforçado após cada troca, evitando que a barra do GNOME mude de tela ao espelhar ou desativar monitores.
+
