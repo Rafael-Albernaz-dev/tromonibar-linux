@@ -82,17 +82,17 @@ int build_metamode(const DisplayState *state, char *buf, size_t buf_size) {
     if (state->hp == HP_PORTRAIT_RIGHT) {
         snprintf(hp_part, sizeof(hp_part),
                  "DPY-0: nvidia-auto-select @900x1440 +%d+0 "
-                 "{ViewPortIn=900x1440, ViewPortOut=1440x900+0+0, Rotation=270}, ",
+                 "{ViewPortIn=900x1440, ViewPortOut=1440x900+0+0, Rotation=270}",
                  hp_x);
     } else if (state->hp == HP_PORTRAIT_LEFT) {
         snprintf(hp_part, sizeof(hp_part),
                  "DPY-0: nvidia-auto-select @900x1440 +%d+0 "
-                 "{ViewPortIn=900x1440, ViewPortOut=1440x900+0+0, Rotation=90}, ",
+                 "{ViewPortIn=900x1440, ViewPortOut=1440x900+0+0, Rotation=90}",
                  hp_x);
     } else if (state->hp == HP_LANDSCAPE) {
         snprintf(hp_part, sizeof(hp_part),
                  "DPY-0: nvidia-auto-select @1440x900 +%d+0 "
-                 "{ViewPortIn=1440x900, ViewPortOut=1440x900+0+0}, ",
+                 "{ViewPortIn=1440x900, ViewPortOut=1440x900+0+0}",
                  hp_x);
     }
 
@@ -100,14 +100,18 @@ int build_metamode(const DisplayState *state, char *buf, size_t buf_size) {
     if (state->tv == TV_EXTEND || state->tv == TV_MIRROR) {
         snprintf(tv_part, sizeof(tv_part),
                  "DPY-1: 1920x1080_60 @1920x1080 +0+0 "
-                 "{ViewPortIn=1920x1080, ViewPortOut=1824x1026+48+27}, ");
+                 "{ViewPortIn=1920x1080, ViewPortOut=1824x1026+48+27}");
     }
 
     int written = snprintf(
         buf, buf_size,
-        "%s%sDPY-2: 1920x1080_165 @1920x1080 +%d+0 "
-        "{ViewPortIn=1920x1080, ViewPortOut=1920x1080+0+0}",
-        hp_part, tv_part, main_x);
+        "DPY-2: 1920x1080_165 @1920x1080 +%d+0 "
+        "{ViewPortIn=1920x1080, ViewPortOut=1920x1080+0+0}%s%s%s%s",
+        main_x,
+        (tv_part[0] != '\0') ? ", " : "",
+        tv_part,
+        (hp_part[0] != '\0') ? ", " : "",
+        hp_part);
 
     if (written < 0 || (size_t)written >= buf_size) {
         return -1;

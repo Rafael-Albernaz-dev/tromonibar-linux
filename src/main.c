@@ -117,6 +117,11 @@ static int apply_state(const DisplayState *desired, int persist) {
         return 1;
     }
 
+    /* Keep DP-0 as Xinerama primary so GNOME Shell keeps the top bar on it. */
+    if (system("nvidia-settings --assign XineramaInfoOrder=DP-0 >/dev/null 2>&1") != 0) {
+        fprintf(stderr, "tromonibar: warning: failed to set XineramaInfoOrder\n");
+    }
+
     if (persist) {
         save_state(desired);
     }

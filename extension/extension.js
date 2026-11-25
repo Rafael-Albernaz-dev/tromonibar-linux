@@ -63,6 +63,8 @@ class TromonibarIndicator extends PanelMenu.Button {
 
         this._tvItems = new Map();
         this._hpItems = new Map();
+        this._busy = false;
+        this._destroyed = false;
 
         const tvHeader = new PopupMenu.PopupMenuItem('TV Panasonic (HDMI-0)', {
             reactive: false,
@@ -110,8 +112,14 @@ class TromonibarIndicator extends PanelMenu.Button {
     }
 
     async _refreshStatus() {
+        if (this._destroyed) {
+            return;
+        }
         try {
             const out = await runCommandAsync([getBinaryPath(), 'status', '--json']);
+            if (this._destroyed) {
+                return;
+            }
             const state = JSON.parse(out);
             for (const [id, item] of this._tvItems.entries()) {
                 item.setOrnament(
@@ -129,13 +137,28 @@ class TromonibarIndicator extends PanelMenu.Button {
     }
 
     async _applyMode(subArgs) {
+        if (this._busy || this._destroyed) {
+            return;
+        }
+        this._busy = true;
+        this._icon.opacity = 140;
         try {
             await runCommandAsync([getBinaryPath(), ...subArgs]);
             await this._refreshStatus();
         } catch (e) {
             logError(e, 'Tromonibar: failed to apply display mode');
             Main.notify('Tromonibar', `Erro ao aplicar modo: ${e.message}`);
+        } finally {
+            this._busy = false;
+            if (!this._destroyed) {
+                this._icon.opacity = 255;
+            }
         }
+    }
+
+    destroy() {
+        this._destroyed = true;
+        super.destroy();
     }
 });
 
