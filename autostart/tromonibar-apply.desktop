@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tromonibar Display Profile
+Comment=Restaura o perfil de monitores do Tromonibar ao iniciar sessao Xorg
+Exec=tromonibar apply
+OnlyShowIn=GNOME;
+X-GNOME-Autostart-enabled=true
+X-GNOME-Autostart-Delay=3
+NoDisplay=true

@@ -1,0 +1,8 @@
+{
+  "uuid": "tromonibar@tromonibar-linux",
+  "name": "Tromonibar",
+  "description": "Quick top-bar switcher for Panasonic TV (overscan-compensated extend/mirror/off) and HP monitor (portrait/landscape/off) on NVIDIA Xorg.",
+  "shell-version": ["46"],
+  "version": 1,
+  "url": "https://github.com/Rafael-Albernaz-dev/tromonibar-linux"
+}
