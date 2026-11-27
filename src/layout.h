@@ -1,6 +1,7 @@
 #ifndef TROMONIBAR_LAYOUT_H
 #define TROMONIBAR_LAYOUT_H
 
+#include <stdbool.h>
 #include <stddef.h>
 
 typedef enum {
@@ -30,7 +31,7 @@ int hp_mode_from_str(const char *s, HpMode *out);
  * Formats an NVIDIA CurrentMetaMode string into `buf` for the given state.
  * Returns 0 on success, -1 if buffer is too small.
  */
-int build_metamode(const DisplayState *state, char *buf, size_t buf_size);
+int build_metamode(const DisplayState *state, bool tv_720p, char *buf, size_t buf_size);
 
 /**
  * Parses `nvidia-settings -q CurrentMetaMode` output into `out`.

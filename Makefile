@@ -19,8 +19,9 @@ build/test_layout: tests/test_layout.c src/layout.c src/layout.h
 	@mkdir -p build
 	$(CC) $(CFLAGS) -o $@ tests/test_layout.c src/layout.c
 
-test: build/test_layout
+test: build/test_layout build/tromonibar
 	./build/test_layout
+	sh tests/test_hdmi.sh
 
 install: all
 	install -d $(BINDIR) $(EXTDIR) $(AUTOSTART_DIR)

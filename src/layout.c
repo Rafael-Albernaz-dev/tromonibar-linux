@@ -70,7 +70,7 @@ int hp_mode_from_str(const char *s, HpMode *out) {
     return -1;
 }
 
-int build_metamode(const DisplayState *state, char *buf, size_t buf_size) {
+int build_metamode(const DisplayState *state, bool tv_720p, char *buf, size_t buf_size) {
     if (!state || !buf || buf_size == 0) {
         return -1;
     }
@@ -99,8 +99,9 @@ int build_metamode(const DisplayState *state, char *buf, size_t buf_size) {
     char tv_part[256] = "";
     if (state->tv == TV_EXTEND || state->tv == TV_MIRROR) {
         snprintf(tv_part, sizeof(tv_part),
-                 "DPY-1: 1920x1080_60 @1920x1080 +0+0 "
-                 "{ViewPortIn=1920x1080, ViewPortOut=1824x1026+48+27}");
+                 "DPY-1: %s @1920x1080 +0+0 {ViewPortIn=1920x1080, ViewPortOut=%s}",
+                 tv_720p ? "1280x720" : "1920x1080_60",
+                 tv_720p ? "1216x684+32+18" : "1824x1026+48+27");
     }
 
     int written = snprintf(
@@ -127,7 +128,8 @@ static int extract_dpy_origin(const char *raw, const char *dpy_prefix, int *x_ou
     }
     const char *at = strchr(p, '@');
     const char *brace = strchr(p, '{');
-    if (!at || (brace && at > brace)) {
+    const char *comma = strchr(p, ',');
+    if (!at || (brace && at > brace) || (comma && at > comma)) {
         return -1;
     }
     const char *plus = strchr(at, '+');
@@ -160,7 +162,8 @@ int parse_metamode(const char *raw, DisplayState *out) {
     }
 
     const char *dpy0 = strstr(raw, "DPY-0:");
-    if (!dpy0) {
+    int hp_x;
+    if (extract_dpy_origin(raw, "DPY-0:", &hp_x) != 0) {
         out->hp = HP_OFF;
     } else {
         const char *brace_end = strchr(dpy0, '}');
@@ -172,9 +175,9 @@ int parse_metamode(const char *raw, DisplayState *out) {
         memcpy(section, dpy0, len);
         section[len] = '\0';
 
-        if (strstr(section, "Rotation=270")) {
+        if (strstr(section, "Rotation=270") || strstr(section, "Rotation=right")) {
             out->hp = HP_PORTRAIT_RIGHT;
-        } else if (strstr(section, "Rotation=90")) {
+        } else if (strstr(section, "Rotation=90") || strstr(section, "Rotation=left")) {
             out->hp = HP_PORTRAIT_LEFT;
         } else {
             out->hp = HP_LANDSCAPE;
